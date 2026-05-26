@@ -24,6 +24,9 @@ Preventing layout shifts (CLS) was a primary focus.
 ### 3. Database Security
 The Supabase table is secured using Row Level Security (RLS). I created a specific policy that allows public read access (SELECT) for the dashboard to function, while completely locking down INSERT, UPDATE, and DELETE privileges.
 
+### 4. Challenges Faced & Solutions
+One of the main challenges I encountered was managing TypeScript strictness during the Vercel deployment. Everything ran perfectly in the local development environment, but Vercel's strict `npm run build` command flagged a type incompatibility with the Framer Motion animation properties (specifically the `type: "spring"` transition). I solved this by explicitly importing the `Variants` type from `framer-motion` and strictly typing my `container` and `item` animation objects, which satisfied the TypeScript compiler and allowed Vercel to build successfully.
+
 ## Local Setup
 To run this project locally, create a `.env.local` file in the root directory and add the environment variables listed in `.env.example`.
 
