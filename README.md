@@ -1,36 +1,32 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Next-Gen Learning Dashboard
 
-## Getting Started
+A high-fidelity, interactive student dashboard prototype built for the Frontend Intern Challenge. This project prioritizes secure data fetching, buttery-smooth animations, and a strict adherence to zero layout shifts.
 
-First, run the development server:
+## Tech Stack
+* **Framework:** Next.js (App Router)
+* **Database:** Supabase (PostgreSQL)
+* **Styling:** Tailwind CSS
+* **Animations:** Framer Motion
+* **Icons:** Lucide React
+
+## Architectural Decisions
+
+### 1. Server & Client Component Split
+To handle data securely and keep the UI interactive, I intentionally split the architecture:
+* **Server Components:** `page.tsx` runs entirely on the server. I used `@supabase/supabase-js` here to fetch the course data directly from the database. This ensures the database logic and API keys are never exposed to the client. 
+* **Client Components:** I passed the fetched Supabase data as props down to `CourseGrid.tsx` and `Sidebar.tsx`. Because Framer Motion requires access to the browser's DOM to calculate spring physics and layout shifts (`layoutId`), these specific interactive pieces are marked with `'use client'`.
+
+### 2. Zero Layout Shifts & Loading States
+Preventing layout shifts (CLS) was a primary focus. 
+* **Animations:** All hover states and entrance animations exclusively use `transform` and `opacity`. I completely avoided animating properties like `width` or `margin` to prevent browser repaints.
+* **Suspense/Loading:** I implemented a `loading.tsx` file at the route level. While the Server Component awaits the Supabase fetch, Next.js automatically renders this pulsing skeleton grid, ensuring the layout structure is locked in place before the data snaps in.
+
+### 3. Database Security
+The Supabase table is secured using Row Level Security (RLS). I created a specific policy that allows public read access (SELECT) for the dashboard to function, while completely locking down INSERT, UPDATE, and DELETE privileges.
+
+## Local Setup
+To run this project locally, create a `.env.local` file in the root directory and add the environment variables listed in `.env.example`.
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
